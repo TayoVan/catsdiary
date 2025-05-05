@@ -1,8 +1,9 @@
+import java.time.LocalDateTime;
 import java.util.Scanner;
 
 public class Main {
     static final int MAX_RECORDS = 50;
-    static String[] dates = new String[MAX_RECORDS];
+    static LocalDateTime[] dates = new LocalDateTime[MAX_RECORDS];
     static String[] texts = new String[MAX_RECORDS];
 
     public static void main(String[] args) {
@@ -42,11 +43,14 @@ public class Main {
     }
 
     static void addEntry(Scanner scanner) {
-        System.out.print("Введіть дату запису аби котик зрозумів що робити (у форматі РРРР-ММ-ДД): ");
-        String date = scanner.nextLine();
+        System.out.print("Введіть дату та час запису аби котик зрозумів що робити (у форматі РРРР-ММ-ДД[T]гг:хх[:сс]): ");
+        String dateTimeString = scanner.nextLine();
 
-        if (!isValidDate(date)) {
-            System.out.println("Некоректний формат дати. Котик збентежений. Спробуйте ще раз.");
+        LocalDateTime dateTime;
+        try {
+            dateTime = LocalDateTime.parse(dateTimeString);
+        } catch (Exception e) {
+            System.out.println("Некоректний формат дати та часу. Котик збентежений. Спробуйте ще раз у форматі РРРР-ММ-ДД[T]гг:хх[:сс].");
             return;
         }
 
@@ -55,12 +59,12 @@ public class Main {
         while (true) {
             String line = scanner.nextLine();
             if (line.isEmpty()) break;
-            text += text + (line + "\n");
+            text += (text.isEmpty() ? "" : "\n") + line;
         }
 
         for (int i = 0; i < MAX_RECORDS; i++) {
             if (dates[i] == null) {
-                dates[i] = date;
+                dates[i] = dateTime;
                 texts[i] = text;
                 System.out.println("Запис успішно додано. Це як залишити теплий слід лапки в пам’яті.");
                 return;
@@ -71,19 +75,23 @@ public class Main {
     }
 
     static void deleteEntry(Scanner scanner) {
-        System.out.print("Введіть дату запису, аби котив знав що потрібно видалити: ");
-        String date = scanner.nextLine();
+        System.out.print("Введіть дату та час запису, аби котив знав що потрібно видалити (у форматі РРРР-ММ-ДД[T]гг:хх[:сс]): ");
+        String dateTimeString = scanner.nextLine();
 
-        for (int i = 0; i < MAX_RECORDS; i++) {
-            if (date.equals(dates[i])) {
-                dates[i] = null;
-                texts[i] = null;
-                System.out.println("Запис видалено. Іноді потрібно залишити місце для нових муркотінь.");
-                return;
+        try {
+            LocalDateTime dateTimeToDelete = LocalDateTime.parse(dateTimeString);
+            for (int i = 0; i < MAX_RECORDS; i++) {
+                if (dateTimeToDelete.equals(dates[i])) {
+                    dates[i] = null;
+                    texts[i] = null;
+                    System.out.println("Запис видалено. Іноді потрібно залишити місце для нових муркотінь.");
+                    return;
+                }
             }
+            System.out.println("Котик не знайшов запис за вказаною датою та часом.");
+        } catch (Exception e) {
+            System.out.println("Некоректний формат дати та часу. Спробуйте ще раз у форматі РРРР-ММ-ДД[T]гг:хх[:сс].");
         }
-
-        System.out.println("Котик не знайшов запис.");
     }
 
     static void showEntries() {
@@ -92,7 +100,7 @@ public class Main {
 
         for (int i = 0; i < MAX_RECORDS; i++) {
             if (dates[i] != null) {
-                System.out.println("Дата: " + dates[i]);
+                System.out.println("Дата та час: " + dates[i]);
                 System.out.println(texts[i]);
                 empty = false;
             }
@@ -101,17 +109,5 @@ public class Main {
         if (empty) {
             System.out.println("Записів поки що немає. Але котики вірять у вас.");
         }
-    }
-
-    static boolean isValidDate(String date) {
-        if (date.length() != 10) return false;
-        if (date.charAt(4) != '-' || date.charAt(7) != '-') return false;
-
-        for (int i = 0; i < date.length(); i++) {
-            if (i == 4 || i == 7) continue;
-            if (date.charAt(i) < '0' || date.charAt(i) > '9') return false;
-        }
-
-        return true;
     }
 }
