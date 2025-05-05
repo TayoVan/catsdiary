@@ -1,4 +1,5 @@
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class Main {
@@ -48,7 +49,8 @@ public class Main {
 
         LocalDateTime dateTime;
         try {
-            dateTime = LocalDateTime.parse(dateTimeString);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd['T']HH:mm[:ss]");
+            dateTime = LocalDateTime.parse(dateTimeString, formatter);
         } catch (Exception e) {
             System.out.println("Некоректний формат дати та часу. Котик збентежений. Спробуйте ще раз у форматі РРРР-ММ-ДД[T]гг:хх[:сс].");
             return;
@@ -79,7 +81,8 @@ public class Main {
         String dateTimeString = scanner.nextLine();
 
         try {
-            LocalDateTime dateTimeToDelete = LocalDateTime.parse(dateTimeString);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd['T']HH:mm[:ss]");
+            LocalDateTime dateTimeToDelete = LocalDateTime.parse(dateTimeString, formatter);
             for (int i = 0; i < MAX_RECORDS; i++) {
                 if (dateTimeToDelete.equals(dates[i])) {
                     dates[i] = null;
@@ -111,3 +114,4 @@ public class Main {
         }
     }
 }
+//😤😤😤😤😤😤😤 переделано😶
